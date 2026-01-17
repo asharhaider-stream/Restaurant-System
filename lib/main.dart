@@ -204,10 +204,10 @@ class MyApp extends StatelessWidget {
       ),
 
       // Dialog Theme
-      dialogTheme: const DialogThemeData(
+      dialogTheme: DialogThemeData(
         backgroundColor: AppColors.surface,
         elevation: 8,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(AppSpacing.radiusLg)),
         ),
         titleTextStyle: AppTextStyles.h3,

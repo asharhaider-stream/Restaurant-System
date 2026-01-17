@@ -2,7 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:restaurant_management_system/features/auth/presentation/views/login_screen.dart';
+import 'package:restaurant_management_system/features/menu/presentation/views/home_menu_screen.dart';
 import 'package:restaurant_management_system/features/menu/presentation/views/menu_screen.dart';
+import 'package:restaurant_management_system/features/orders/presentation/views/orders_empty_screen.dart';
+
+import '../../features/splash/presentation/views/splash_screen.dart';
 
 /// Centralized routing configuration using GoRouter
 ///
@@ -27,6 +31,7 @@ class AppRouter {
   static const String cart = '/cart';
   static const String checkout = '/checkout';
   static const String orders = '/orders';
+  static const String noOrders = '/noOrders';
   static const String orderDetail = '/order/:id';
   static const String profile = '/profile';
   static const String settings = '/settings';
@@ -34,7 +39,7 @@ class AppRouter {
   /// Create the GoRouter instance
   static GoRouter createRouter() {
     return GoRouter(
-      initialLocation: login,
+      initialLocation: home,
       debugLogDiagnostics: kDebugMode, // Enable in development
 
       // Error page handler
@@ -72,36 +77,36 @@ class AppRouter {
             GoRoute(
               path: home,
               name: 'home',
-              builder: (context, state) => const RestaurantBrowseScreen(),
-              routes: [
-                // Restaurant Detail (nested under home)
-                GoRoute(
-                  path: 'restaurant/:id',
-                  name: 'restaurantDetail',
-                  builder: (context, state) {
-                    final id = state.pathParameters['id']!;
-                    return RestaurantDetailScreen(restaurantId: id);
-                  },
-                ),
-              ],
+              builder: (context, state) => const HomeMenuScreen(),
+              // routes: [
+              //   // Restaurant Detail (nested under home)
+              //   GoRoute(
+              //     path: 'restaurant/:id',
+              //     name: 'restaurantDetail',
+              //     builder: (context, state) {
+              //       final id = state.pathParameters['id']!;
+              //       return RestaurantDetailScreen(restaurantId: id);
+              //     },
+              //   ),
+              // ],
             ),
 
-            // Menu
+            // Detailed Menu
             GoRoute(
               path: menu,
               name: 'menu',
-              builder: (context, state) => const HomeMenuScreen(),
-              routes: [
-                // Menu Item Detail
-                GoRoute(
-                  path: 'item/:id',
-                  name: 'menuItemDetail',
-                  builder: (context, state) {
-                    final id = state.pathParameters['id']!;
-                    return MenuItemDetailScreen(itemId: id);
-                  },
-                ),
-              ],
+              builder: (context, state) => const MenuScreen(),
+              // routes: [
+              //   // Menu Item Detail
+              //   GoRoute(
+              //     path: 'item/:id',
+              //     name: 'menuItemDetail',
+              //     builder: (context, state) {
+              //       final id = state.pathParameters['id']!;
+              //       return MenuItemDetailScreen(itemId: id);
+              //     },
+              //   ),
+              // ],
             ),
 
             // Cart
@@ -109,47 +114,53 @@ class AppRouter {
               path: cart,
               name: 'cart',
               builder: (context, state) => const CartScreen(),
-              routes: [
-                // Checkout
-                GoRoute(
-                  path: 'checkout',
-                  name: 'checkout',
-                  builder: (context, state) => const CheckoutScreen(),
-                ),
-              ],
+              // routes: [
+              //   // Checkout
+              //   GoRoute(
+              //     path: 'checkout',
+              //     name: 'checkout',
+              //     builder: (context, state) => const CheckoutScreen(),
+              //   ),
+              // ],
             ),
 
-            // Orders
+            // // Orders
             GoRoute(
               path: orders,
               name: 'orders',
               builder: (context, state) => const OrdersScreen(),
-              routes: [
-                // Order Detail
-                GoRoute(
-                  path: ':id',
-                  name: 'orderDetail',
-                  builder: (context, state) {
-                    final id = state.pathParameters['id']!;
-                    return OrderDetailScreen(orderId: id);
-                  },
-                ),
-              ],
+              // routes: [
+              //   // Order Detail
+              //   GoRoute(
+              //     path: ':id',
+              //     name: 'orderDetail',
+              //     builder: (context, state) {
+              //       final id = state.pathParameters['id']!;
+              //       return OrderDetailScreen(orderId: id);
+              //     },
+              //   ),
+              // ],
             ),
 
-            // Profile
+            GoRoute(
+              path: noOrders,
+              name: 'noOrders',
+              builder: (context, state) => const OrdersEmptyView(),
+            ),
+
+            // // Profile
             GoRoute(
               path: profile,
               name: 'profile',
               builder: (context, state) => const ProfileScreen(),
-              routes: [
-                // Settings
-                GoRoute(
-                  path: 'settings',
-                  name: 'settings',
-                  builder: (context, state) => const SettingsScreen(),
-                ),
-              ],
+              // routes: [
+              //   // Settings
+              //   GoRoute(
+              //     path: 'settings',
+              //     name: 'settings',
+              //     builder: (context, state) => const SettingsScreen(),
+              //   ),
+              // ],
             ),
           ],
         ),
@@ -161,32 +172,6 @@ class AppRouter {
 // ============================================================================
 // PLACEHOLDER SCREENS (Replace with actual implementations)
 // ============================================================================
-
-class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Splash Screen'),
-      ),
-    );
-  }
-}
-
-class AuthScreen extends StatelessWidget {
-  const AuthScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Auth Screen'),
-      ),
-    );
-  }
-}
 
 class MainAppShell extends StatefulWidget {
   final Widget child;
@@ -218,7 +203,7 @@ class _MainAppShellState extends State<MainAppShell> {
         context.go(AppRouter.cart);
         break;
       case 3:
-        context.go(AppRouter.orders);
+        context.go(AppRouter.noOrders);
         break;
       case 4:
         context.go(AppRouter.profile);
@@ -263,69 +248,69 @@ class _MainAppShellState extends State<MainAppShell> {
   }
 }
 
-class RestaurantBrowseScreen extends StatelessWidget {
-  const RestaurantBrowseScreen({super.key});
+// class RestaurantBrowseScreen extends StatelessWidget {
+//   const RestaurantBrowseScreen({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Restaurant Browse Screen'),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return const Scaffold(
+//       body: Center(
+//         child: Text('Restaurant Browse Screen'),
+//       ),
+//     );
+//   }
+// }
 
-class RestaurantDetailScreen extends StatelessWidget {
-  final String restaurantId;
+// class RestaurantDetailScreen extends StatelessWidget {
+//   final String restaurantId;
 
-  const RestaurantDetailScreen({
-    super.key,
-    required this.restaurantId,
-  });
+//   const RestaurantDetailScreen({
+//     super.key,
+//     required this.restaurantId,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Restaurant $restaurantId')),
-      body: Center(
-        child: Text('Restaurant Detail: $restaurantId'),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: Text('Restaurant $restaurantId')),
+//       body: Center(
+//         child: Text('Restaurant Detail: $restaurantId'),
+//       ),
+//     );
+//   }
+// }
 
-class MenuScreen extends StatelessWidget {
-  const MenuScreen({super.key});
+// class MenuScreen extends StatelessWidget {
+//   const MenuScreen({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Menu Screen'),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return const Scaffold(
+//       body: Center(
+//         child: Text('Menu Screen'),
+//       ),
+//     );
+//   }
+// }
 
-class MenuItemDetailScreen extends StatelessWidget {
-  final String itemId;
+// class MenuItemDetailScreen extends StatelessWidget {
+//   final String itemId;
 
-  const MenuItemDetailScreen({
-    super.key,
-    required this.itemId,
-  });
+//   const MenuItemDetailScreen({
+//     super.key,
+//     required this.itemId,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Menu Item $itemId')),
-      body: Center(
-        child: Text('Menu Item Detail: $itemId'),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: Text('Menu Item $itemId')),
+//       body: Center(
+//         child: Text('Menu Item Detail: $itemId'),
+//       ),
+//     );
+//   }
+// }
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -367,24 +352,24 @@ class OrdersScreen extends StatelessWidget {
   }
 }
 
-class OrderDetailScreen extends StatelessWidget {
-  final String orderId;
+// class OrderDetailScreen extends StatelessWidget {
+//   final String orderId;
 
-  const OrderDetailScreen({
-    super.key,
-    required this.orderId,
-  });
+//   const OrderDetailScreen({
+//     super.key,
+//     required this.orderId,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Order $orderId')),
-      body: Center(
-        child: Text('Order Detail: $orderId'),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: Text('Order $orderId')),
+//       body: Center(
+//         child: Text('Order Detail: $orderId'),
+//       ),
+//     );
+//   }
+// }
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
